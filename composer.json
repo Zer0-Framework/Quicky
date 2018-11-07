@@ -19,7 +19,8 @@
     "require": {
         "php": ">=7.2",
         "Zer0-Framework/Zer0": "*",
-        "Zer0-Framework/Config": "*"
+        "Zer0-Framework/Config": "*",
+        "kakserpom/quicky": "dev-master"
     },
     "autoload": {
         "classmap": ["src/"]
