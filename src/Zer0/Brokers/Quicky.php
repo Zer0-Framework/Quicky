@@ -31,12 +31,12 @@ class Quicky extends Base
             $ref = $value;
         }
 
-        $quicky->lang_callback = function ($phrase) {
-            return _($phrase);
+        $quicky->lang_callback = function ($match) {
+            return __($match[1]);
         };
 
         $quicky->lang_callback_e = function ($expr) {
-            return '_(' . $expr . ')';
+            return '__(' . $expr . ')';
         };
         return $quicky;
     }
