@@ -10,26 +10,41 @@ use Zer0\Config\Interfaces\ConfigInterface;
  */
 class Quicky extends Base
 {
+    public $mock_functions;
+
     /**
      * @param ConfigInterface $config
      * @return \Quicky
      */
     public function instantiate(ConfigInterface $config): \Quicky
     {
-        $quicky = new \Quicky();
-        //$quicky->load_filter('pre', 'optimize');
-
-        foreach ($config->toArray() as $key => $value) {
-            $ref =& $quicky;
-            foreach (explode('.', $key) as $split) {
-                if (is_object($ref)) {
-                    $ref =& $ref->{$split};
-                } elseif (is_array($ref)) {
-                    $ref =& $ref[$split];
+        $quicky = new class extends \Quicky {
+            public $mock_functions = [];
+            public function mockFunctions() {
+                foreach ($this->mock_functions as $func) {
+                    $this->register_function($func, function () {
+                    });
                 }
             }
-            $ref = $value;
-        }
+
+            public function applyConfig(ConfigInterface $config) {
+                foreach ($config->toArray() as $key => $value) {
+                    $ref =& $this;
+                    foreach (explode('.', $key) as $split) {
+                        if (is_object($ref)) {
+                            $ref =& $ref->{$split};
+                        } elseif (is_array($ref)) {
+                            $ref =& $ref[$split];
+                        }
+                    }
+                    $ref = $value;
+                }
+            }
+        };
+
+        $quicky->applyConfig($config);
+        $quicky->mockFunctions();
+        //$quicky->load_filter('pre', 'optimize');
 
         $quicky->lang_callback = function ($match) {
             return __($match[1]);

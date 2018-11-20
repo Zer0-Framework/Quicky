@@ -3,10 +3,10 @@
 namespace Gettext\Extractors;
 
 use Gettext\Translations;
-use Twig_Loader_Array;
 use Twig_Environment;
-use Twig_Source;
 use Twig_Extensions_Extension_I18n;
+use Twig_Loader_Array;
+use Twig_Source;
 use Zer0\App;
 
 /**
@@ -26,16 +26,18 @@ class Quicky extends Extractor implements ExtractorInterface
         $options += static::$options;
 
         /**
-         * @var \Quicky $quicky
+         * @var \Quicky $tpl
          */
-        $quicky = App::instance()->broker('Quicky')->get();
-        $quicky->lang = 'en';
+        $tpl = App::instance()->broker('000-default.ymlQuicky')->get();
+        $tpl->lang = 'en';
+        $tpl->register_function('url', function () {
+        });
 
-        $quicky->lang_callback = function ($match) use ($translations) {
+        $tpl->lang_callback = function ($match) use ($translations) {
             $original = $match[1];
-            $translations->insert(null, $original);
+            $translations->insert($original, $original)->setTranslation($original);
         };
-        PhpCode::fromString($quicky->_compile_string($string, $options['file']), $translations, $options);
+        PhpCode::fromString($tpl->_compile_string($string, $options['file']), $translations, $options);
     }
 
     /**
@@ -44,20 +46,20 @@ class Quicky extends Extractor implements ExtractorInterface
     public static function fromFile($file, Translations $translations, array $options = [])
     {
         /**
-         * @var \Quicky $quicky
+         * @var \Quicky $tpl
          */
-        $quicky = App::instance()->broker('Quicky')->get();
-        $quicky->lang_callback = function ($match) use ($translations) {
+        $tpl = App::instance()->broker('Quicky')->get();
+        $tpl->lang_callback = function ($match) use ($translations) {
             $original = $match[1];
-            $translations->insert(null, $original);
+            $translations->insert($original, $original)->setTranslation($original);
         };
-        $quicky->lang = 'en';
+        $tpl->lang = 'en';
 
-        $l = strlen($quicky->template_dir);
-        if (substr($file, 0, $l) === $quicky->template_dir) {
+        $l = strlen($tpl->template_dir);
+        if (substr($file, 0, $l) === $tpl->template_dir) {
             $file = substr($file, $l);
         }
-        $options['file'] = $quicky->_compile($file, null, 'Quicky', true);
+        $options['file'] = $tpl->_compile($file, null, 'Quicky', true);
         PhpCode::fromString(file_get_contents($options['file']), $translations, $options);
     }
 }
