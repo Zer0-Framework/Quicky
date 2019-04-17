@@ -55,4 +55,14 @@ class Quicky extends Base
         };
         return $quicky;
     }
+
+    /**
+     * @param string $name
+     * @param bool $caching
+     * @return \Quicky
+     */
+    public function get(string $name = '', bool $caching = true): \Quicky
+    {
+        return parent::get($name, $caching);
+    }
 }
