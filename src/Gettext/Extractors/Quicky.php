@@ -28,7 +28,7 @@ class Quicky extends Extractor implements ExtractorInterface
         /**
          * @var \Quicky $tpl
          */
-        $tpl = App::instance()->broker('000-default.ymlQuicky')->get();
+        $tpl = App::instance()->factory('000-default.ymlQuicky');
         $tpl->lang = 'en';
         $tpl->register_function('url', function () {
         });
@@ -48,7 +48,7 @@ class Quicky extends Extractor implements ExtractorInterface
         /**
          * @var \Quicky $tpl
          */
-        $tpl = App::instance()->broker('Quicky')->get();
+        $tpl = App::instance()->factory('Quicky');
         $tpl->lang_callback = function ($match) use ($translations) {
             $original = $match[1];
             $translations->insert($original, $original)->setTranslation($original);
